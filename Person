@@ -1,0 +1,103 @@
+#include <iostream>
+using namespace std;
+
+class Person {
+public://构造函数
+         Person() { //默认构造函数
+             m_name = new char[1];
+             *m_name = '\0';
+             m_age = 0;
+             m_sex = 'M';
+             m_height = 0.0f;
+             m_weight = 0.0f;
+             cout << "Person() called " <<m_name << endl;
+         };
+         Person(const char* name, int age, char sex, float height, float weight);//普通构造函数
+         Person( Person &p) {//拷贝构造函数//const Person &p
+              m_name = new char[strlen(p.m_name)+1];
+              strcpy_s(m_name, strlen(p.m_name) + 1,p.m_name);
+              m_age = p.m_age;
+              m_sex = p.m_sex;
+              m_height = p.m_height;
+              m_weight = p.m_weight;
+              cout << "Person( Person &p) called " << m_name << endl;
+         }
+         ~Person(){//析构函数
+             cout << "~person called "<<m_name<<endl;
+         }
+public://工具函数
+    char* getname() {
+        return m_name;
+    }
+    void setname(char *name) {
+        if (name == NULL) {
+            m_name = new char[1];
+            *m_name = '\0';
+        }
+        else {
+            m_name = new char[strlen(name)+1];
+            strcpy_s(m_name, strlen(name) + 1,name);
+        }
+    }
+public://操作运算符重载
+    bool operator <(Person &p) {
+        //年龄为标准
+        return m_age < p.m_age;
+    }
+    bool operator ==(Person &p) {
+        //年龄和姓名
+        return m_age == p.m_age && strcmp(m_name,p.m_name) == 0;
+    }
+    void operator =(Person &p) {
+        if (m_name) {
+            delete[]m_name;
+        }
+        //深拷贝
+        m_name = new char[(strlen(p.m_name)+1)];
+        strcpy_s(m_name,strlen(p.m_name) + 1,p.m_name);
+        m_age = p.m_age;
+        m_height = p.m_height;
+        m_sex = p.m_sex;
+        m_weight = p.m_weight;
+        cout << "operator =(Person &p) " << m_name << endl;
+    }
+private://数据成员
+         char *m_name;
+         int m_age;
+         char m_sex;
+         float m_height;
+         float m_weight;
+public://行为
+    void eat() {
+        cout <<m_name<< " is eating!!!" << endl;
+    }
+    bool ishealth() {
+        float bmi = m_weight / (m_height*m_height);
+        return bmi <= 25.0f && bmi >= 20.0f;
+    }
+};
+
+
+Person::Person(const char* name, int age, char sex, float height, float weight) {
+    m_name = new char[strlen(name)+1];
+    strcpy_s(m_name, strlen(name) + 1,name);
+    m_age = age;
+    m_sex = sex;
+    m_height = height;
+    m_weight = weight;
+    cout << "Person(char* name, int age, char sex, float height, float weight) called " << m_name << endl;
+}
+int main()
+{
+     Person a;
+     Person b("asd",13,'M',1.82,60.1);
+     Person c("vrt", 20, 'W', 1.62, 49.0);
+     Person d = c;
+     a = b;
+     if (c.ishealth()) {
+         c.eat();
+     }
+     else 
+         cout << "no eating !!!" << endl;
+}
+
